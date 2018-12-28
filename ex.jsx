@@ -1,104 +1,6 @@
-app.bringToFront();  
-//select layers //
 
-cTID = function(s) { return cTID[s] || (cTID[s] = app.charIDToTypeID(s)); };
-sTID = function(s) { return app.stringIDToTypeID(s); }; 
 
-selectAllLayers();
-function selectAllLayers() {
-    var ref = new ActionReference();
-    ref.putEnumerated(cTID('Lyr '), cTID('Ordn'), cTID('Trgt'));
-    var desc = new ActionDescriptor();
-    desc.putReference(cTID('null'), ref);
-    executeAction(sTID('selectAllLayers'), desc, DialogModes.NO);
-}
-// swich to mask ///
-
-if(documents.length) mainm();  
-function mainm(){  
-var selectedlayers = getSelectedLayersIdx();  
-selectedlayers.reverse();  
-for(var z in selectedlayers){  
-    selectLayerByIndex(selectedlayers[z]);  
-    selectLayerData();  
-     createMask();  
-    }  
-app.activeDocument.selection.deselect();  
-for(var a in selectedlayers) {selectLayerByIndex(selectedlayers[a],true);}  
-};  
-function getSelectedLayersIdx(){   
-      var selectedLayers = new Array;   
-      var ref = new ActionReference();   
-      ref.putProperty(charIDToTypeID('Prpr'), stringIDToTypeID('targetLayers'));  
-      ref.putEnumerated( charIDToTypeID('Dcmn'), charIDToTypeID('Ordn'), charIDToTypeID('Trgt') );   
-      var desc = executeActionGet(ref);   
-      if( desc.hasKey( stringIDToTypeID( 'targetLayers' ) ) ){   
-         desc = desc.getList( stringIDToTypeID( 'targetLayers' ));   
-          var c = desc.count;   
-          var selectedLayers = new Array();   
-          for(var i=0;i<c;i++){   
-            try{   
-               activeDocument.backgroundLayer;   
-               selectedLayers.push(  desc.getReference( i ).getIndex() );   
-            }catch(e){   
-               selectedLayers.push(  desc.getReference( i ).getIndex()+1 );   
-            }   
-          }   
-       }else{   
-         var ref = new ActionReference();   
-         ref.putProperty( charIDToTypeID('Prpr') , charIDToTypeID( 'ItmI' ));   
-         ref.putEnumerated( charIDToTypeID('Lyr '), charIDToTypeID('Ordn'), charIDToTypeID('Trgt') );   
-         try{   
-            activeDocument.backgroundLayer;   
-            selectedLayers.push( executeActionGet(ref).getInteger(charIDToTypeID( 'ItmI' ))-1);   
-         }catch(e){   
-            selectedLayers.push( executeActionGet(ref).getInteger(charIDToTypeID( 'ItmI' )));   
-         }   
-     var vis = app.activeDocument.activeLayer.visible;  
-        if(vis == true) app.activeDocument.activeLayer.visible = false;  
-        var desc9 = new ActionDescriptor();  
-    var list9 = new ActionList();  
-    var ref9 = new ActionReference();  
-    ref9.putEnumerated( charIDToTypeID('Lyr '), charIDToTypeID('Ordn'), charIDToTypeID('Trgt') );  
-    list9.putReference( ref9 );  
-    desc9.putList( charIDToTypeID('null'), list9 );  
-    executeAction( charIDToTypeID('Shw '), desc9, DialogModes.NO );  
-    if(app.activeDocument.activeLayer.visible == false) selectedLayers.shift();  
-        app.activeDocument.activeLayer.visible = vis;  
-      }   
-      return selectedLayers;   
-};  
-function selectLayerByIndex(index,add){   
-var ref = new ActionReference();  
-ref.putIndex(charIDToTypeID('Lyr '), index);  
-var desc = new ActionDescriptor();  
-desc.putReference(charIDToTypeID('null'), ref );  
-if(add) desc.putEnumerated( stringIDToTypeID( 'selectionModifier' ), stringIDToTypeID( 'selectionModifierType' ), stringIDToTypeID( 'addToSelection' ) );   
-desc.putBoolean( charIDToTypeID( 'MkVs' ), false );   
-try{  
-executeAction(charIDToTypeID('slct'), desc, DialogModes.NO );  
-}catch(e){}  
-};  
-function createMask() {  
-var desc13 = new ActionDescriptor();  
-desc13.putClass( charIDToTypeID('Nw  '), charIDToTypeID('Chnl') );  
-var ref12 = new ActionReference();  
-ref12.putEnumerated( charIDToTypeID('Chnl'), charIDToTypeID('Chnl'), charIDToTypeID('Msk ') );  
-desc13.putReference( charIDToTypeID('At  '), ref12 );  
-desc13.putEnumerated( charIDToTypeID('Usng'), charIDToTypeID('UsrM'), charIDToTypeID('RvlS') );  
-executeAction( charIDToTypeID('Mk  '), desc13, DialogModes.NO );  
-};  
-function selectLayerData() {  
-var desc8 = new ActionDescriptor();  
-var ref6 = new ActionReference();  
-ref6.putProperty( charIDToTypeID('Chnl'), charIDToTypeID('fsel') );  
-desc8.putReference( charIDToTypeID('null'), ref6 );  
-var ref7 = new ActionReference();  
-ref7.putEnumerated( charIDToTypeID('Chnl'), charIDToTypeID('Chnl'), charIDToTypeID('Trsp') );  
-desc8.putReference( charIDToTypeID('T   '), ref7 );  
-executeAction( charIDToTypeID('setd'), desc8, DialogModes.NO );  
-};  
-
+app.bringToFront(); 
 $.localize = true;
 
 //=================================================================
@@ -311,6 +213,7 @@ function settingDialog(exportInfo) {
     dlgMain.etFileNamePrefix.alignment = 'fill';
     dlgMain.etFileNamePrefix.preferredSize.width = StrToIntWithDefault( stretDestination, 160 );
 
+
 	// -- the sixth line is the panel
     dlgMain.pnlFileType = dlgMain.grpTopLeft.add("panel", undefined, strLabelFileType);
 	dlgMain.pnlFileType.alignment = 'fill';
@@ -329,12 +232,15 @@ function settingDialog(exportInfo) {
 				break;
 		}
 	}
+	    
+
 
 	// -- now the options panel that changes
     dlgMain.pnlFileType.pnlOptions = dlgMain.pnlFileType.add("panel", undefined, "Options");
     dlgMain.pnlFileType.pnlOptions.alignment = 'fill';
     dlgMain.pnlFileType.pnlOptions.orientation = 'stack';
     dlgMain.pnlFileType.pnlOptions.preferredSize.height = StrToIntWithDefault( strpnlOptions, 100 );
+
 
 	// the right side of the dialog, the ok and cancel buttons
 	dlgMain.grpTopRight = dlgMain.grpTop.add("group");
@@ -583,41 +489,7 @@ function exportChildren(dupObj, orgObj, exportInfo, dupDocRef, fileNamePrefix) {
         if (fileNameBody.length > 120) {
 			fileNameBody = fileNameBody.substring(0,120);
 		}
-			function dup_mask()  
-					{  
-					try {  
-						var d = new ActionDescriptor();  
-						var r = new ActionReference();  
-						r.putEnumerated(stringIDToTypeID("channel"), stringIDToTypeID("channel"), stringIDToTypeID("mask"));  
-						d.putReference(stringIDToTypeID("null"), r);  
-						d.putBoolean(stringIDToTypeID("makeVisible"), false);  
-						executeAction(stringIDToTypeID("select"), d, DialogModes.NO);  
-						}  
-					catch (e) { return false; }  
-				  
-					try {  
-						var d = new ActionDescriptor();  
-						d.putClass(stringIDToTypeID("new"), stringIDToTypeID("document"));  
-						var r = new ActionReference();  
-						r.putEnumerated(stringIDToTypeID("channel"), stringIDToTypeID("channel"), stringIDToTypeID("mask"));  
-						d.putReference(stringIDToTypeID("using"), r);  
-						executeAction(stringIDToTypeID("make"), d, DialogModes.NO);  
-				  
-						return true;  
-						}  
-					catch (e) { throw(e); }  
-					}  
-				  
-				if (dup_mask())  
-					{  
-					var tmp = activeDocument;  
-					duppedDocumentTmp.close(SaveOptions.DONOTSAVECHANGES);  
-					duppedDocumentTmp = tmp;  
-					duppedDocumentTmp.changeMode(ChangeMode.GRAYSCALE);   
-					duppedDocumentTmp.changeMode(ChangeMode.RGB);   
-					saveFile(duppedDocumentTmp, fileNameBody, exportInfo);  
-					}  
-									
+		saveFile(duppedDocumentTmp, fileNameBody, exportInfo);  
 				  
 				duppedDocumentTmp.close(SaveOptions.DONOTSAVECHANGES);  
 

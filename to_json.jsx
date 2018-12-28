@@ -1,5 +1,3 @@
-#target photoshop
-
 var originalDoc = app.activeDocument;
 
 var allLayers = new Array;

@@ -1,4 +1,3 @@
-#target photoshop
 app.bringToFront();
 
 // This script exports Adobe Photoshop layers as individual PNGs. It also
