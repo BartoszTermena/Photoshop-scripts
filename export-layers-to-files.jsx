@@ -615,7 +615,10 @@ function exportChildren(dupObj, orgObj, exportInfo, dupDocRef, fileNamePrefix) {
 					duppedDocumentTmp = tmp;  
 					duppedDocumentTmp.changeMode(ChangeMode.GRAYSCALE);   
 					duppedDocumentTmp.changeMode(ChangeMode.RGB);   
-					saveFile(duppedDocumentTmp, fileNameBody, exportInfo);  
+					saveFile(duppedDocumentTmp, fileNameBody, exportInfo); 
+					alert("duppedDocumentTmp " + duppedDocumentTmp );
+					alert("fileNameBody " + fileNameBody );
+					alert("exportInfo " + exportInfo );
 					}  
 									
 				  
@@ -789,3 +792,4 @@ function StrToIntWithDefault( s, n ) {
     return n;
 }
 // End Export Layers To Files.jsx
+

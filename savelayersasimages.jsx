@@ -100,6 +100,8 @@ desc8.putReference( charIDToTypeID('T   '), ref7 );
 executeAction( charIDToTypeID('setd'), desc8, DialogModes.NO );  
 };  
 
+
+
 function main() {
     // two quick checks
 	if(!okDocument()) {
@@ -118,7 +120,6 @@ function main() {
     prefs.filePath = app.activeDocument.path;
     prefs.count = 0;
     prefs.folders = true;
-    prefs.trim = false;
 
     //instantiate dialogue
     Dialog();
@@ -172,25 +173,14 @@ function saveImage(layer) {
     handle = prefs.filePath + "/" + activeDocument.name.slice(0,-4) + "/" + handle;
     handle = getUniqueName(handle);
     prefs.count++;
+    SaveTIFF(handle); 
+   	
+}						
 
-    var dupDocument;
-    if (prefs.trim) {
-        dupDocument = activeDocument.duplicate();
-        dupDocument.trim(TrimType.TRANSPARENT);
-    }
-
-    if (prefs.fileType=="PNG" && prefs.fileQuality=="8") {
-        SavePNG8(handle); 
-    } else if (prefs.fileType=="PNG" && prefs.fileQuality=="24") {
-        SavePNG24(handle);
-    } else if (prefs.fileType=="JPG") {
-        SaveTIFF(handle); 
-    } else {
-        // default save format
-        SavePNG8(handle);
-    }
-
-    if (prefs.trim) dupDocument.close(SaveOptions.DONOTSAVECHANGES);
+				
+function SaveTIFF(saveFile) {
+    tiffSaveOptions = new TiffSaveOptions();
+    activeDocument.saveAs(saveFile, tiffSaveOptions, true, Extension.LOWERCASE); 
 }
 
 function getFolder(layer, handle) {
@@ -224,31 +214,21 @@ function padder(input, padLength) {
     var result = (new Array(padLength + 1 - input.toString().length)).join('0') + input;
     return result;
 }
+ 
 
-function SavePNG8(saveFile) {
-    exportOptionsSaveForWeb = new ExportOptionsSaveForWeb();
-    exportOptionsSaveForWeb.format = SaveDocumentType.PNG
-    exportOptionsSaveForWeb.dither = Dither.NONE;
-    activeDocument.exportDocument( saveFile, ExportType.SAVEFORWEB, exportOptionsSaveForWeb );
-} 
-
-function SavePNG24(saveFile) { 
-    exportOptionsSaveForWeb = new ExportOptionsSaveForWeb();
-    exportOptionsSaveForWeb.format = SaveDocumentType.PNG
-    exportOptionsSaveForWeb.PNG8 = false;
-    exportOptionsSaveForWeb.dither = Dither.NONE;
-    activeDocument.exportDocument( saveFile, ExportType.SAVEFORWEB, exportOptionsSaveForWeb );
-} 
-
-function SaveJPEG(saveFile) { 
-    jpegSaveOptions = new JPEGSaveOptions(); 
-    jpegSaveOptions.quality = prefs.fileQuality;
-    activeDocument.saveAs(saveFile, jpegSaveOptions, true, Extension.LOWERCASE); 
-} 
-function SaveTIFF(saveFile) {
-    tiffSaveOptions = new TiffSaveOptions();
-    activeDocument.saveAs(saveFile, tiffSaveOptions, true, Extension.LOWERCASE); 
-    
+function saveFile( docRef, fileNameBody, exportInfo) {
+    switch (exportInfo.fileType) {
+        case tiffIndex:
+            var saveFile = new File(exportInfo.destination + "/" + fileNameBody + ".tif");
+            tiffSaveOptions = new TiffSaveOptions();
+            docRef.saveAs(saveFile, tiffSaveOptions, true, Extension.LOWERCASE);
+            break;
+        default:
+            if ( DialogModes.NO != app.playbackDisplayDialogs ) {
+                alert(strUnexpectedError);
+            }
+            break;
+    }
 }
 
 function Dialog() {
@@ -257,13 +237,10 @@ function Dialog() {
     dlg.saver = dlg.add("dropdownlist", undefined, ""); 
     dlg.quality = dlg.add("dropdownlist", undefined, "");
     dlg.pngtype = dlg.add("dropdownlist", undefined, "");
-    dlg.trim = dlg.add("checkbox", undefined, "Trim");
-
 
     // file type
     var saveOpt = [];
-    saveOpt[0] = "PNG"; 
-    saveOpt[1] = "JPG"; 
+    saveOpt[0] = "TIFF"; 
     for (var i=0, len=saveOpt.length; i<len; i++) {
         dlg.saver.add ("item", "Save as " + saveOpt[i]);
     }; 
@@ -302,9 +279,7 @@ function Dialog() {
     dlg.pngtype.onChange = function() {
        prefs.fileQuality = pngtypeOpt[parseInt(this.selection)]; 
     };
-    dlg.trim.onClick = function() {
-        prefs.trim = !prefs.trim;
-    };
+  
 
     // remainder of UI
     var uiButtonRun = "Continue"; 

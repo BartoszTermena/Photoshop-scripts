@@ -1,6 +1,3 @@
-// save all open documents;  
-// 2011, use it at your own risk;  
-#target photoshop;  
 if (app.documents.length > 0) {  
 var theFirst = app.activeDocument;  
 var theDocs = app.documents;  
